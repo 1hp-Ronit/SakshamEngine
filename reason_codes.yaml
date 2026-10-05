@@ -1,0 +1,417 @@
+# Feature → reason code mapping, with plain-language text and deterministic action templates (en / hi / mr).
+#   positive : shown when the feature pushes the score UP
+#   negative : shown when the feature pulls the score DOWN
+#   action   : concrete step for the applicant when it is a drag (used by the deterministic advisory fallback)
+#   reportable: false → hidden from reason lists / advice (still shown in the SHAP waterfall)
+# Add or edit entries freely; code looks features up by the `feature` key.
+
+version: "1"
+
+reason_codes:
+  RC001:
+    feature: buffer_ratio
+    label: { en: "Savings buffer vs EMI", hi: "EMI के मुकाबले बचत", mr: "EMI च्या तुलनेत शिल्लक" }
+    positive: { en: "Strong savings buffer relative to the EMI", hi: "EMI के मुकाबले अच्छी बचत", mr: "EMI च्या तुलनेत चांगली शिल्लक" }
+    negative: { en: "Low account balance relative to the EMI", hi: "EMI के मुकाबले खाते में कम बैलेंस", mr: "EMI च्या तुलनेत खात्यातील शिल्लक कमी" }
+    action:
+      en: "Try to keep a balance of at least 2 EMIs in your bank account at all times."
+      hi: "अपने बैंक खाते में हमेशा कम से कम 2 EMI के बराबर रकम रखने की कोशिश करें।"
+      mr: "तुमच्या बँक खात्यात नेहमी किमान 2 EMI इतकी रक्कम ठेवण्याचा प्रयत्न करा."
+  RC002:
+    feature: bounce_velocity
+    label: { en: "Payment bounces", hi: "भुगतान बाउंस", mr: "पेमेंट बाउन्स" }
+    positive: { en: "No recent payment bounces", hi: "हाल में कोई भुगतान बाउंस नहीं", mr: "अलीकडे कोणताही पेमेंट बाउन्स नाही" }
+    negative: { en: "Recent payment bounces on the account", hi: "खाते में हाल के भुगतान बाउंस", mr: "खात्यात अलीकडील पेमेंट बाउन्स" }
+    action:
+      en: "Set a reminder 2 days before every EMI or auto-debit date and top up your account so no payment bounces."
+      hi: "हर EMI या ऑटो-डेबिट की तारीख से 2 दिन पहले रिमाइंडर लगाएं और खाते में पैसे डालें ताकि कोई भुगतान बाउंस न हो।"
+      mr: "प्रत्येक EMI किंवा ऑटो-डेबिट तारखेच्या 2 दिवस आधी स्मरणपत्र लावा आणि खात्यात पैसे भरा, म्हणजे पेमेंट बाउन्स होणार नाही."
+  RC003:
+    feature: income_regularity
+    label: { en: "Income regularity", hi: "आय की नियमितता", mr: "उत्पन्नातील नियमितता" }
+    positive: { en: "Money comes in regularly every month", hi: "हर महीने नियमित रूप से पैसा आता है", mr: "दर महिन्याला नियमितपणे पैसे येतात" }
+    negative: { en: "Monthly income is uneven", hi: "मासिक आय अनियमित है", mr: "मासिक उत्पन्न असमान आहे" }
+    action:
+      en: "Route as much of your earnings as possible into one bank account every week so your income shows up steadily."
+      hi: "अपनी कमाई का ज़्यादातर हिस्सा हर हफ्ते एक ही बैंक खाते में जमा करें ताकि आय नियमित दिखे।"
+      mr: "तुमची जास्तीत जास्त कमाई दर आठवड्याला एकाच बँक खात्यात जमा करा, म्हणजे उत्पन्न नियमित दिसेल."
+  RC004:
+    feature: monthly_inflow_count
+    label: { en: "Number of monthly credits", hi: "मासिक जमा की संख्या", mr: "मासिक जमांची संख्या" }
+    positive: { en: "Frequent incoming payments", hi: "बार-बार पैसा जमा होता है", mr: "वारंवार पैसे जमा होतात" }
+    negative: { en: "Few incoming payments each month", hi: "हर महीने कम बार पैसा जमा होता है", mr: "दर महिन्याला कमी वेळा पैसे जमा होतात" }
+    action:
+      en: "Ask customers to pay you through UPI or bank transfer instead of cash, so more of your earnings are recorded."
+      hi: "ग्राहकों से नकद के बजाय UPI या बैंक ट्रांसफर से भुगतान लें, ताकि आपकी ज़्यादा कमाई दर्ज हो।"
+      mr: "ग्राहकांकडून रोख ऐवजी UPI किंवा बँक ट्रान्सफरने पैसे घ्या, म्हणजे तुमची जास्त कमाई नोंदली जाईल."
+  RC005:
+    feature: distinct_upi_counterparties
+    label: { en: "UPI customer base", hi: "UPI ग्राहक आधार", mr: "UPI ग्राहक संख्या" }
+    positive: { en: "Many different people pay you via UPI", hi: "कई अलग-अलग लोग UPI से भुगतान करते हैं", mr: "अनेक वेगवेगळे लोक UPI ने पैसे देतात" }
+    negative: { en: "Only a few people pay you via UPI", hi: "बहुत कम लोग UPI से भुगतान करते हैं", mr: "फार कमी लोक UPI ने पैसे देतात" }
+    action:
+      en: "Display a UPI QR code at your work and encourage more customers to pay digitally."
+      hi: "अपने काम की जगह UPI QR कोड लगाएं और ज़्यादा ग्राहकों को डिजिटल भुगतान के लिए प्रोत्साहित करें।"
+      mr: "तुमच्या कामाच्या ठिकाणी UPI QR कोड लावा आणि अधिक ग्राहकांना डिजिटल पेमेंटसाठी प्रोत्साहित करा."
+  RC006:
+    feature: cash_vs_digital_ratio
+    reportable: false
+    label: { en: "Cash share of income", hi: "आय में नकद का हिस्सा", mr: "उत्पन्नातील रोख हिस्सा" }
+    positive: { en: "Healthy mix of cash and digital income", hi: "नकद और डिजिटल आय का अच्छा मेल", mr: "रोख आणि डिजिटल उत्पन्नाचा चांगला समतोल" }
+    negative: { en: "A large share of income arrives in cash", hi: "आय का बड़ा हिस्सा नकद आता है", mr: "उत्पन्नाचा मोठा हिस्सा रोख येतो" }
+    action: { en: "Prefer digital payments from customers.", hi: "ग्राहकों से डिजिटल भुगतान को प्राथमिकता दें।", mr: "ग्राहकांकडून डिजिटल पेमेंटला प्राधान्य द्या." }
+  RC007:
+    feature: digital_inflow_share
+    label: { en: "Digital income share", hi: "डिजिटल आय का हिस्सा", mr: "डिजिटल उत्पन्नाचा हिस्सा" }
+    positive: { en: "Most income arrives digitally", hi: "ज़्यादातर आय डिजिटल रूप से आती है", mr: "बहुतेक उत्पन्न डिजिटल पद्धतीने येते" }
+    negative: { en: "Only a small share of income is digital", hi: "आय का केवल छोटा हिस्सा डिजिटल है", mr: "उत्पन्नाचा फक्त छोटा हिस्सा डिजिटल आहे" }
+    action:
+      en: "Move more of your day-to-day earnings to UPI and bank transfers so they appear in your bank record."
+      hi: "अपनी रोज़ की कमाई का ज़्यादा हिस्सा UPI और बैंक ट्रांसफर से लें ताकि वह आपके बैंक रिकॉर्ड में दिखे।"
+      mr: "तुमची रोजची कमाई जास्तीत जास्त UPI आणि बँक ट्रान्सफरने घ्या, म्हणजे ती तुमच्या बँक नोंदीत दिसेल."
+  RC008:
+    feature: min_balance_days
+    label: { en: "Days with a very low balance", hi: "बहुत कम बैलेंस वाले दिन", mr: "खूप कमी शिल्लक असलेले दिवस" }
+    positive: { en: "Account rarely runs near zero", hi: "खाता शायद ही कभी खाली होता है", mr: "खाते क्वचितच जवळजवळ रिकामे होते" }
+    negative: { en: "Account often runs close to zero", hi: "खाता अक्सर लगभग खाली रहता है", mr: "खाते अनेकदा जवळजवळ रिकामे असते" }
+    action:
+      en: "Avoid letting your balance fall below ₹500 — move a small amount into the account every time money comes in."
+      hi: "खाते का बैलेंस ₹500 से नीचे न जाने दें — जब भी पैसे आएं, थोड़ी रकम खाते में रखें।"
+      mr: "खात्यातील शिल्लक ₹500 पेक्षा खाली जाऊ देऊ नका — पैसे आले की थोडी रक्कम खात्यात ठेवा."
+  RC009:
+    feature: balance_trend
+    label: { en: "Balance trend", hi: "बैलेंस का रुझान", mr: "शिल्लकीचा कल" }
+    positive: { en: "Account balance is growing over time", hi: "खाते का बैलेंस समय के साथ बढ़ रहा है", mr: "खात्यातील शिल्लक कालांतराने वाढत आहे" }
+    negative: { en: "Account balance is shrinking over time", hi: "खाते का बैलेंस समय के साथ घट रहा है", mr: "खात्यातील शिल्लक कालांतराने कमी होत आहे" }
+    action:
+      en: "Put aside a fixed small amount each week as savings so your balance grows month after month."
+      hi: "हर हफ्ते एक तय छोटी रकम बचत के रूप में अलग रखें ताकि बैलेंस महीने दर महीने बढ़े।"
+      mr: "दर आठवड्याला ठराविक छोटी रक्कम बचत म्हणून बाजूला ठेवा, म्हणजे शिल्लक महिन्यानुमहिना वाढेल."
+  RC010:
+    feature: avg_monthly_inflow
+    label: { en: "Monthly money coming in", hi: "मासिक आमदनी", mr: "मासिक आवक" }
+    positive: { en: "Good monthly inflow into the account", hi: "खाते में अच्छी मासिक आमदनी", mr: "खात्यात चांगली मासिक आवक" }
+    negative: { en: "Low monthly inflow into the account", hi: "खाते में कम मासिक आमदनी", mr: "खात्यात कमी मासिक आवक" }
+    action:
+      en: "Bring all your income through the bank account — even small amounts add up and show your true earnings."
+      hi: "अपनी पूरी आमदनी बैंक खाते से लें — छोटी रकम भी जुड़कर आपकी असली कमाई दिखाती है।"
+      mr: "तुमचे संपूर्ण उत्पन्न बँक खात्यातून घ्या — लहान रक्कमही मिळून तुमची खरी कमाई दाखवते."
+  RC011:
+    feature: max_monthly_outflow
+    reportable: false
+    label: { en: "Peak monthly spending", hi: "अधिकतम मासिक खर्च", mr: "कमाल मासिक खर्च" }
+    positive: { en: "Spending is well within income", hi: "खर्च आय के भीतर है", mr: "खर्च उत्पन्नाच्या मर्यादेत आहे" }
+    negative: { en: "A very high spending month", hi: "एक महीने में बहुत ज़्यादा खर्च", mr: "एका महिन्यात खूप जास्त खर्च" }
+    action: { en: "Plan big expenses ahead so they do not drain your account.", hi: "बड़े खर्चों की पहले से योजना बनाएं।", mr: "मोठ्या खर्चांचे आधीच नियोजन करा." }
+  RC012:
+    feature: salary_regularity
+    label: { en: "Regular large credits", hi: "नियमित बड़ी जमा", mr: "नियमित मोठ्या जमा" }
+    positive: { en: "Large credits arrive on a regular schedule", hi: "बड़ी रकम नियमित समय पर आती है", mr: "मोठी रक्कम नियमित वेळेवर येते" }
+    negative: { en: "No regular large credit pattern", hi: "बड़ी रकम आने का कोई नियमित पैटर्न नहीं", mr: "मोठी रक्कम येण्याचा नियमित पॅटर्न नाही" }
+    action:
+      en: "Try to receive your main earnings on a fixed day each month, for example by agreeing a payment date with your main client."
+      hi: "अपनी मुख्य कमाई हर महीने एक तय तारीख पर पाने की कोशिश करें, जैसे अपने मुख्य ग्राहक से भुगतान की तारीख तय करके।"
+      mr: "तुमची मुख्य कमाई दर महिन्याला ठराविक तारखेला मिळवण्याचा प्रयत्न करा, उदा. मुख्य ग्राहकाशी पेमेंटची तारीख ठरवून."
+  RC013:
+    feature: upi_txn_frequency
+    reportable: false
+    label: { en: "UPI activity", hi: "UPI गतिविधि", mr: "UPI व्यवहार" }
+    positive: { en: "Active UPI usage", hi: "UPI का सक्रिय उपयोग", mr: "UPI चा सक्रिय वापर" }
+    negative: { en: "Limited UPI usage", hi: "UPI का सीमित उपयोग", mr: "UPI चा मर्यादित वापर" }
+    action: { en: "Use UPI for everyday payments.", hi: "रोज़ के भुगतान UPI से करें।", mr: "रोजचे पेमेंट UPI ने करा." }
+  RC014:
+    feature: balance_volatility
+    label: { en: "Balance ups and downs", hi: "बैलेंस में उतार-चढ़ाव", mr: "शिल्लकीतील चढ-उतार" }
+    positive: { en: "Account balance is stable", hi: "खाते का बैलेंस स्थिर है", mr: "खात्यातील शिल्लक स्थिर आहे" }
+    negative: { en: "Account balance swings sharply", hi: "खाते के बैलेंस में तेज़ उतार-चढ़ाव है", mr: "खात्यातील शिल्लकीत मोठे चढ-उतार आहेत" }
+    action:
+      en: "Spread large expenses over the month and keep a small cushion in your account so the balance stays steady."
+      hi: "बड़े खर्चों को महीने भर में बाँटें और खाते में थोड़ी रकम बफर के रूप में रखें ताकि बैलेंस स्थिर रहे।"
+      mr: "मोठे खर्च महिनाभरात विभागून करा आणि खात्यात थोडी रक्कम राखीव ठेवा, म्हणजे शिल्लक स्थिर राहील."
+  RC015:
+    feature: recharge_frequency_regularity
+    label: { en: "Mobile recharge regularity", hi: "मोबाइल रिचार्ज की नियमितता", mr: "मोबाइल रिचार्जची नियमितता" }
+    positive: { en: "Consistent mobile recharge pattern", hi: "मोबाइल रिचार्ज का नियमित पैटर्न", mr: "मोबाइल रिचार्जचा नियमित पॅटर्न" }
+    negative: { en: "Irregular mobile recharges", hi: "मोबाइल रिचार्ज अनियमित हैं", mr: "मोबाइल रिचार्ज अनियमित आहेत" }
+    action:
+      en: "Recharge your phone on a regular schedule — for example the same date every month — and avoid long gaps."
+      hi: "अपना फोन नियमित रूप से रिचार्ज करें — जैसे हर महीने एक ही तारीख को — और लंबा अंतराल न आने दें।"
+      mr: "तुमचा फोन नियमितपणे रिचार्ज करा — उदा. दर महिन्याच्या एकाच तारखेला — आणि मोठा खंड पडू देऊ नका."
+  RC016:
+    feature: recharge_count_12m
+    label: { en: "Recharges in the last year", hi: "पिछले साल के रिचार्ज", mr: "गेल्या वर्षातील रिचार्ज" }
+    positive: { en: "Frequent recharges over the past year", hi: "पिछले साल नियमित रिचार्ज", mr: "गेल्या वर्षभरात नियमित रिचार्ज" }
+    negative: { en: "Few recharges over the past year", hi: "पिछले साल कम रिचार्ज", mr: "गेल्या वर्षभरात कमी रिचार्ज" }
+    action:
+      en: "Choose a monthly plan and renew it on time every month instead of occasional top-ups."
+      hi: "कभी-कभार टॉप-अप के बजाय मासिक प्लान लें और हर महीने समय पर रिन्यू करें।"
+      mr: "अधूनमधून टॉप-अप करण्याऐवजी मासिक प्लॅन घ्या आणि दर महिन्याला वेळेवर रिन्यू करा."
+  RC017:
+    feature: avg_recharge_value
+    label: { en: "Recharge amount", hi: "रिचार्ज की राशि", mr: "रिचार्जची रक्कम" }
+    positive: { en: "Healthy recharge amounts", hi: "रिचार्ज की अच्छी राशि", mr: "रिचार्जची चांगली रक्कम" }
+    negative: { en: "Small recharge amounts", hi: "रिचार्ज की राशि कम है", mr: "रिचार्जची रक्कम कमी आहे" }
+    action:
+      en: "Moving to a regular monthly plan, even a small one, shows steady use of your mobile connection."
+      hi: "नियमित मासिक प्लान (छोटा ही सही) लेने से आपके मोबाइल कनेक्शन का स्थिर उपयोग दिखता है।"
+      mr: "नियमित मासिक प्लॅन (लहान का असेना) घेतल्याने तुमच्या मोबाइल कनेक्शनचा स्थिर वापर दिसतो."
+  RC018:
+    feature: recharge_value_trend
+    reportable: false
+    label: { en: "Recharge amount trend", hi: "रिचार्ज राशि का रुझान", mr: "रिचार्ज रकमेचा कल" }
+    positive: { en: "Recharge amounts are rising", hi: "रिचार्ज की राशि बढ़ रही है", mr: "रिचार्जची रक्कम वाढत आहे" }
+    negative: { en: "Recharge amounts are falling", hi: "रिचार्ज की राशि घट रही है", mr: "रिचार्जची रक्कम कमी होत आहे" }
+    action: { en: "Keep your recharge plan steady.", hi: "अपना रिचार्ज प्लान स्थिर रखें।", mr: "तुमचा रिचार्ज प्लॅन स्थिर ठेवा." }
+  RC019:
+    feature: sim_tenure_months
+    label: { en: "How long you have used your SIM", hi: "SIM का पुराना उपयोग", mr: "SIM चा जुना वापर" }
+    positive: { en: "Long-standing mobile connection", hi: "लंबे समय से चल रहा मोबाइल कनेक्शन", mr: "दीर्घकाळापासूनचे मोबाइल कनेक्शन" }
+    negative: { en: "Fairly new mobile connection", hi: "मोबाइल कनेक्शन अपेक्षाकृत नया है", mr: "मोबाइल कनेक्शन तुलनेने नवे आहे" }
+    action:
+      en: "Keep using the same mobile number for all your bank and business dealings — a long-running number builds trust."
+      hi: "अपने सभी बैंक और व्यापार के कामों में एक ही मोबाइल नंबर इस्तेमाल करें — पुराना नंबर भरोसा बनाता है।"
+      mr: "तुमच्या सर्व बँक आणि व्यवसायाच्या कामांसाठी एकच मोबाइल नंबर वापरा — जुना नंबर विश्वास निर्माण करतो."
+  RC020:
+    feature: max_recharge_gap_days
+    label: { en: "Longest gap without recharge", hi: "रिचार्ज के बिना सबसे लंबा अंतराल", mr: "रिचार्जशिवायचा सर्वात मोठा खंड" }
+    positive: { en: "No long gaps between recharges", hi: "रिचार्ज के बीच लंबा अंतराल नहीं", mr: "रिचार्जमध्ये मोठा खंड नाही" }
+    negative: { en: "Long gaps between recharges", hi: "रिचार्ज के बीच लंबे अंतराल", mr: "रिचार्जमध्ये मोठे खंड" }
+    action:
+      en: "Do not let your phone plan run out — recharge a few days before it expires."
+      hi: "अपना फोन प्लान खत्म न होने दें — खत्म होने से कुछ दिन पहले रिचार्ज करें।"
+      mr: "तुमचा फोन प्लॅन संपू देऊ नका — संपण्याच्या काही दिवस आधी रिचार्ज करा."
+  RC021:
+    feature: gst_avg_turnover
+    label: { en: "Business turnover", hi: "व्यापार का टर्नओवर", mr: "व्यवसायाची उलाढाल" }
+    positive: { en: "Healthy business turnover on GST returns", hi: "GST रिटर्न में अच्छा टर्नओवर", mr: "GST रिटर्नमध्ये चांगली उलाढाल" }
+    negative: { en: "Low business turnover on GST returns", hi: "GST रिटर्न में कम टर्नओवर", mr: "GST रिटर्नमध्ये कमी उलाढाल" }
+    action:
+      en: "Record every sale properly and bill through your GST account so your full turnover is visible."
+      hi: "हर बिक्री सही तरह से दर्ज करें और GST खाते से बिल बनाएं ताकि आपका पूरा टर्नओवर दिखे।"
+      mr: "प्रत्येक विक्री व्यवस्थित नोंदवा आणि GST खात्यातून बिल करा, म्हणजे तुमची संपूर्ण उलाढाल दिसेल."
+  RC022:
+    feature: gst_turnover_volatility
+    label: { en: "Turnover ups and downs", hi: "टर्नओवर में उतार-चढ़ाव", mr: "उलाढालीतील चढ-उतार" }
+    positive: { en: "Business turnover is steady", hi: "व्यापार का टर्नओवर स्थिर है", mr: "व्यवसायाची उलाढाल स्थिर आहे" }
+    negative: { en: "Business turnover swings month to month", hi: "व्यापार का टर्नओवर महीने दर महीने बदलता है", mr: "व्यवसायाची उलाढाल महिन्यानुमहिना बदलते" }
+    action:
+      en: "Look for regular customers or monthly contracts to make your sales steadier through the year."
+      hi: "साल भर बिक्री स्थिर रखने के लिए नियमित ग्राहक या मासिक अनुबंध खोजें।"
+      mr: "वर्षभर विक्री स्थिर ठेवण्यासाठी नियमित ग्राहक किंवा मासिक करार शोधा."
+  RC023:
+    feature: gst_filing_consistency
+    label: { en: "GST filing on time", hi: "समय पर GST फाइलिंग", mr: "वेळेवर GST फाइलिंग" }
+    positive: { en: "GST returns filed on time", hi: "GST रिटर्न समय पर भरे गए", mr: "GST रिटर्न वेळेवर भरले" }
+    negative: { en: "GST returns filed late", hi: "GST रिटर्न देर से भरे गए", mr: "GST रिटर्न उशिरा भरले" }
+    action:
+      en: "File your GST return before the due date every month — set a reminder for the 15th."
+      hi: "हर महीने GST रिटर्न नियत तारीख से पहले भरें — 15 तारीख का रिमाइंडर लगाएं।"
+      mr: "दर महिन्याला GST रिटर्न देय तारखेपूर्वी भरा — 15 तारखेचे स्मरणपत्र लावा."
+  RC024:
+    feature: gst_growth_trend
+    label: { en: "Business growth", hi: "व्यापार की वृद्धि", mr: "व्यवसायाची वाढ" }
+    positive: { en: "Business turnover is growing", hi: "व्यापार का टर्नओवर बढ़ रहा है", mr: "व्यवसायाची उलाढाल वाढत आहे" }
+    negative: { en: "Business turnover is shrinking", hi: "व्यापार का टर्नओवर घट रहा है", mr: "व्यवसायाची उलाढाल कमी होत आहे" }
+    action:
+      en: "Focus on your best-selling items and regular customers to bring your sales back on an upward path."
+      hi: "अपनी सबसे ज़्यादा बिकने वाली चीज़ों और नियमित ग्राहकों पर ध्यान दें ताकि बिक्री फिर बढ़े।"
+      mr: "तुमच्या सर्वाधिक विकल्या जाणाऱ्या वस्तू आणि नियमित ग्राहकांवर लक्ष द्या, म्हणजे विक्री पुन्हा वाढेल."
+  RC025:
+    feature: gst_months_filed
+    label: { en: "Months of GST history", hi: "GST रिकॉर्ड के महीने", mr: "GST नोंदीचे महिने" }
+    positive: { en: "Long GST filing history", hi: "GST फाइलिंग का लंबा इतिहास", mr: "GST फाइलिंगचा दीर्घ इतिहास" }
+    negative: { en: "Short GST filing history", hi: "GST फाइलिंग का इतिहास छोटा है", mr: "GST फाइलिंगचा इतिहास कमी आहे" }
+    action:
+      en: "Keep filing your GST returns every month without a break — a longer record helps."
+      hi: "बिना रुके हर महीने GST रिटर्न भरते रहें — लंबा रिकॉर्ड मदद करता है।"
+      mr: "खंड न पाडता दर महिन्याला GST रिटर्न भरत रहा — दीर्घ नोंद उपयोगी ठरते."
+  RC026:
+    feature: mandi_settlement_frequency
+    label: { en: "Mandi sales frequency", hi: "मंडी बिक्री की आवृत्ति", mr: "मंडी विक्रीची वारंवारता" }
+    positive: { en: "Regular crop sales at the mandi", hi: "मंडी में नियमित फसल बिक्री", mr: "मंडीत नियमित पीक विक्री" }
+    negative: { en: "Infrequent crop sales at the mandi", hi: "मंडी में फसल बिक्री कम होती है", mr: "मंडीत पीक विक्री कमी वेळा होते" }
+    action:
+      en: "Sell your produce through the registered mandi and keep every receipt, so your sales are on record."
+      hi: "अपनी उपज पंजीकृत मंडी के माध्यम से बेचें और हर रसीद संभालकर रखें ताकि बिक्री रिकॉर्ड में रहे।"
+      mr: "तुमचा शेतमाल नोंदणीकृत मंडीतून विका आणि प्रत्येक पावती जपून ठेवा, म्हणजे विक्री नोंदीत राहील."
+  RC027:
+    feature: mandi_distinct_cycles
+    label: { en: "Harvest cycles on record", hi: "रिकॉर्ड में फसल चक्र", mr: "नोंदीतील पीक हंगाम" }
+    positive: { en: "Sales across several harvest seasons", hi: "कई फसल मौसमों में बिक्री", mr: "अनेक पीक हंगामांत विक्री" }
+    negative: { en: "Sales in only one harvest season", hi: "केवल एक फसल मौसम में बिक्री", mr: "फक्त एका पीक हंगामात विक्री" }
+    action:
+      en: "If possible, plan crops for more than one season so you have income at different times of the year."
+      hi: "हो सके तो एक से ज़्यादा मौसम की फसल की योजना बनाएं ताकि साल में अलग-अलग समय आय आए।"
+      mr: "शक्य असल्यास एकापेक्षा जास्त हंगामांसाठी पिकांचे नियोजन करा, म्हणजे वर्षात वेगवेगळ्या वेळी उत्पन्न मिळेल."
+  RC028:
+    feature: mandi_avg_monthly_settlement
+    label: { en: "Average monthly mandi income", hi: "औसत मासिक मंडी आय", mr: "सरासरी मासिक मंडी उत्पन्न" }
+    positive: { en: "Good average mandi income", hi: "मंडी से अच्छी औसत आय", mr: "मंडीतून चांगले सरासरी उत्पन्न" }
+    negative: { en: "Low average mandi income", hi: "मंडी से औसत आय कम है", mr: "मंडीतून सरासरी उत्पन्न कमी आहे" }
+    action:
+      en: "Bring more of your produce to the registered mandi and keep the settlement slips."
+      hi: "अपनी ज़्यादा उपज पंजीकृत मंडी में लाएं और भुगतान की पर्चियां संभालकर रखें।"
+      mr: "तुमचा जास्त शेतमाल नोंदणीकृत मंडीत आणा आणि पेमेंटच्या पावत्या जपून ठेवा."
+  RC029:
+    feature: mandi_avg_settlement_delay
+    label: { en: "Delay in receiving mandi payment", hi: "मंडी भुगतान में देरी", mr: "मंडी पेमेंट मिळण्यातील विलंब" }
+    positive: { en: "Mandi payments arrive quickly", hi: "मंडी का भुगतान जल्दी मिलता है", mr: "मंडीचे पेमेंट लवकर मिळते" }
+    negative: { en: "Mandi payments take long to arrive", hi: "मंडी का भुगतान मिलने में देर लगती है", mr: "मंडीचे पेमेंट मिळण्यास उशीर लागतो" }
+    action:
+      en: "Prefer buyers and commission agents who pay quickly, and keep a cash reserve for the waiting period."
+      hi: "जल्दी भुगतान करने वाले खरीदारों और आढ़तियों को प्राथमिकता दें, और इंतज़ार के समय के लिए कुछ पैसे अलग रखें।"
+      mr: "लवकर पेमेंट करणारे खरेदीदार आणि आडते निवडा आणि प्रतीक्षेच्या काळासाठी थोडी रक्कम राखीव ठेवा."
+  RC030:
+    feature: mandi_crop_diversity
+    label: { en: "Variety of crops sold", hi: "बेची गई फसलों की विविधता", mr: "विकलेल्या पिकांची विविधता" }
+    positive: { en: "Income from several different crops", hi: "कई अलग-अलग फसलों से आय", mr: "अनेक वेगवेगळ्या पिकांपासून उत्पन्न" }
+    negative: { en: "Income depends on a single crop", hi: "आय केवल एक फसल पर निर्भर है", mr: "उत्पन्न फक्त एका पिकावर अवलंबून आहे" }
+    action:
+      en: "Consider growing one additional crop so a single bad season does not hurt your whole income."
+      hi: "एक और फसल उगाने पर विचार करें ताकि एक खराब मौसम से पूरी आय प्रभावित न हो।"
+      mr: "आणखी एक पीक घेण्याचा विचार करा, म्हणजे एका वाईट हंगामाचा संपूर्ण उत्पन्नावर परिणाम होणार नाही."
+  RC031:
+    feature: mandi_tenure_months
+    label: { en: "Time selling at the mandi", hi: "मंडी में बिक्री का समय", mr: "मंडीत विक्रीचा कालावधी" }
+    positive: { en: "Long record of selling at the mandi", hi: "मंडी में बिक्री का लंबा रिकॉर्ड", mr: "मंडीत विक्रीची दीर्घ नोंद" }
+    negative: { en: "Short record of selling at the mandi", hi: "मंडी में बिक्री का रिकॉर्ड छोटा है", mr: "मंडीत विक्रीची नोंद कमी आहे" }
+    action:
+      en: "Keep selling through the registered mandi every season — a longer record builds your profile."
+      hi: "हर मौसम में पंजीकृत मंडी के माध्यम से बेचते रहें — लंबा रिकॉर्ड आपकी प्रोफ़ाइल मज़बूत करता है।"
+      mr: "प्रत्येक हंगामात नोंदणीकृत मंडीतून विक्री करत रहा — दीर्घ नोंद तुमची प्रोफाइल मजबूत करते."
+  RC032:
+    feature: requested_emi
+    label: { en: "Requested EMI", hi: "मांगी गई EMI", mr: "मागितलेली EMI" }
+    positive: { en: "The EMI is comfortable for your income", hi: "EMI आपकी आय के हिसाब से आरामदायक है", mr: "EMI तुमच्या उत्पन्नाच्या तुलनेत सोयीची आहे" }
+    negative: { en: "The EMI is on the higher side", hi: "EMI कुछ ज़्यादा है", mr: "EMI थोडी जास्त आहे" }
+    action:
+      en: "Consider a lower-priced vehicle or a bigger down payment so the monthly EMI is smaller."
+      hi: "कम कीमत का वाहन या ज़्यादा डाउन पेमेंट चुनें ताकि मासिक EMI कम हो।"
+      mr: "कमी किमतीचे वाहन किंवा जास्त डाउन पेमेंट निवडा, म्हणजे मासिक EMI कमी होईल."
+  RC033:
+    feature: est_monthly_income
+    label: { en: "Estimated monthly income", hi: "अनुमानित मासिक आय", mr: "अंदाजित मासिक उत्पन्न" }
+    positive: { en: "Good estimated monthly income", hi: "अच्छी अनुमानित मासिक आय", mr: "चांगले अंदाजित मासिक उत्पन्न" }
+    negative: { en: "Estimated monthly income is on the lower side", hi: "अनुमानित मासिक आय कम है", mr: "अंदाजित मासिक उत्पन्न कमी आहे" }
+    action:
+      en: "Make your earnings visible — use bank, UPI and GST/mandi records for all your income."
+      hi: "अपनी कमाई दिखाएं — सारी आय के लिए बैंक, UPI और GST/मंडी रिकॉर्ड का उपयोग करें।"
+      mr: "तुमची कमाई दिसू द्या — सर्व उत्पन्नासाठी बँक, UPI आणि GST/मंडी नोंदी वापरा."
+  RC034:
+    feature: emi_to_income_ratio
+    label: { en: "EMI compared with income", hi: "आय के मुकाबले EMI", mr: "उत्पन्नाच्या तुलनेत EMI" }
+    positive: { en: "EMI is a small part of your income", hi: "EMI आपकी आय का छोटा हिस्सा है", mr: "EMI हा तुमच्या उत्पन्नाचा छोटा भाग आहे" }
+    negative: { en: "EMI takes a large part of your income", hi: "EMI आपकी आय का बड़ा हिस्सा लेती है", mr: "EMI तुमच्या उत्पन्नाचा मोठा भाग घेते" }
+    action:
+      en: "Choose a loan whose EMI is no more than about one-third of your monthly income."
+      hi: "ऐसा लोन चुनें जिसकी EMI आपकी मासिक आय के लगभग एक-तिहाई से ज़्यादा न हो।"
+      mr: "अशा कर्जाची निवड करा ज्याची EMI तुमच्या मासिक उत्पन्नाच्या सुमारे एक-तृतीयांशपेक्षा जास्त नसेल."
+  RC035:
+    feature: product_type_encoded
+    reportable: false
+    label: { en: "Type of loan", hi: "लोन का प्रकार", mr: "कर्जाचा प्रकार" }
+    positive: { en: "Loan type suits your profile", hi: "लोन का प्रकार आपकी प्रोफ़ाइल के अनुकूल है", mr: "कर्जाचा प्रकार तुमच्या प्रोफाइलला अनुरूप आहे" }
+    negative: { en: "Loan type is a stretch for your profile", hi: "लोन का प्रकार आपकी प्रोफ़ाइल के लिए ज़्यादा है", mr: "कर्जाचा प्रकार तुमच्या प्रोफाइलसाठी जास्त आहे" }
+    action: { en: "Consider a smaller loan product.", hi: "छोटे लोन उत्पाद पर विचार करें।", mr: "लहान कर्ज उत्पादाचा विचार करा." }
+  RC036:
+    feature: ticket_size
+    reportable: false
+    label: { en: "Loan amount", hi: "लोन की राशि", mr: "कर्जाची रक्कम" }
+    positive: { en: "Loan amount is modest", hi: "लोन की राशि मध्यम है", mr: "कर्जाची रक्कम मध्यम आहे" }
+    negative: { en: "Loan amount is large", hi: "लोन की राशि बड़ी है", mr: "कर्जाची रक्कम मोठी आहे" }
+    action: { en: "Consider a smaller loan amount.", hi: "कम लोन राशि पर विचार करें।", mr: "कमी कर्ज रकमेचा विचार करा." }
+  RC037:
+    feature: src_aa_available
+    label: { en: "Bank record shared", hi: "बैंक रिकॉर्ड साझा किया", mr: "बँक नोंद शेअर केली" }
+    positive: { en: "Bank statement data was available", hi: "बैंक स्टेटमेंट डेटा उपलब्ध था", mr: "बँक स्टेटमेंट डेटा उपलब्ध होता" }
+    negative: { en: "Bank statement data was not available", hi: "बैंक स्टेटमेंट डेटा उपलब्ध नहीं था", mr: "बँक स्टेटमेंट डेटा उपलब्ध नव्हता" }
+    action:
+      en: "Share your bank statement data (with your consent) so we can see your full picture."
+      hi: "अपनी सहमति से बैंक स्टेटमेंट डेटा साझा करें ताकि हम आपकी पूरी तस्वीर देख सकें।"
+      mr: "तुमच्या संमतीने बँक स्टेटमेंट डेटा शेअर करा, म्हणजे आम्हाला तुमचे संपूर्ण चित्र दिसेल."
+  RC038:
+    feature: src_telecom_available
+    label: { en: "Mobile record shared", hi: "मोबाइल रिकॉर्ड साझा किया", mr: "मोबाइल नोंद शेअर केली" }
+    positive: { en: "Mobile recharge data was available", hi: "मोबाइल रिचार्ज डेटा उपलब्ध था", mr: "मोबाइल रिचार्ज डेटा उपलब्ध होता" }
+    negative: { en: "Mobile recharge data was not available", hi: "मोबाइल रिचार्ज डेटा उपलब्ध नहीं था", mr: "मोबाइल रिचार्ज डेटा उपलब्ध नव्हता" }
+    action:
+      en: "Share your mobile recharge history (with your consent) to strengthen your application."
+      hi: "अपनी सहमति से मोबाइल रिचार्ज इतिहास साझा करें ताकि आपका आवेदन मज़बूत हो।"
+      mr: "तुमच्या संमतीने मोबाइल रिचार्ज इतिहास शेअर करा, म्हणजे तुमचा अर्ज मजबूत होईल."
+  RC039:
+    feature: src_business_available
+    reportable: false
+    label: { en: "Business record shared", hi: "व्यापार रिकॉर्ड साझा किया", mr: "व्यवसाय नोंद शेअर केली" }
+    positive: { en: "Business records were available", hi: "व्यापार रिकॉर्ड उपलब्ध थे", mr: "व्यवसाय नोंदी उपलब्ध होत्या" }
+    negative: { en: "Business records were not available", hi: "व्यापार रिकॉर्ड उपलब्ध नहीं थे", mr: "व्यवसाय नोंदी उपलब्ध नव्हत्या" }
+    action: { en: "Share business records if you have them.", hi: "यदि हों तो व्यापार रिकॉर्ड साझा करें।", mr: "असल्यास व्यवसाय नोंदी शेअर करा." }
+  RC040:
+    feature: data_completeness_score
+    label: { en: "Completeness of shared data", hi: "साझा डेटा की पूर्णता", mr: "शेअर केलेल्या डेटाची पूर्णता" }
+    positive: { en: "Complete set of data was available", hi: "डेटा का पूरा सेट उपलब्ध था", mr: "डेटाचा संपूर्ण संच उपलब्ध होता" }
+    negative: { en: "Only partial data was available", hi: "केवल आंशिक डेटा उपलब्ध था", mr: "फक्त अर्धवट डेटा उपलब्ध होता" }
+    action:
+      en: "Allow access to more data sources (bank, mobile, business records) so we can assess you more fully."
+      hi: "ज़्यादा डेटा स्रोतों (बैंक, मोबाइल, व्यापार रिकॉर्ड) की अनुमति दें ताकि हम आपका बेहतर आकलन कर सकें।"
+      mr: "अधिक डेटा स्रोतांना (बँक, मोबाइल, व्यवसाय नोंदी) परवानगी द्या, म्हणजे आम्ही तुमचे अधिक चांगले मूल्यांकन करू शकू."
+  RC041:
+    feature: n_sources_available
+    reportable: false
+    label: { en: "Number of data sources", hi: "डेटा स्रोतों की संख्या", mr: "डेटा स्रोतांची संख्या" }
+    positive: { en: "Several data sources were available", hi: "कई डेटा स्रोत उपलब्ध थे", mr: "अनेक डेटा स्रोत उपलब्ध होते" }
+    negative: { en: "Few data sources were available", hi: "कम डेटा स्रोत उपलब्ध थे", mr: "कमी डेटा स्रोत उपलब्ध होते" }
+    action: { en: "Allow more data sources.", hi: "ज़्यादा डेटा स्रोतों की अनुमति दें।", mr: "अधिक डेटा स्रोतांना परवानगी द्या." }
+  RC042:
+    feature: has_business_records
+    reportable: false
+    label: { en: "Business records on file", hi: "व्यापार रिकॉर्ड मौजूद", mr: "व्यवसाय नोंदी उपलब्ध" }
+    positive: { en: "Business records on file", hi: "व्यापार रिकॉर्ड मौजूद हैं", mr: "व्यवसाय नोंदी उपलब्ध आहेत" }
+    negative: { en: "No business records on file", hi: "कोई व्यापार रिकॉर्ड नहीं है", mr: "व्यवसाय नोंदी उपलब्ध नाहीत" }
+    action: { en: "Keep formal business records.", hi: "व्यापार के औपचारिक रिकॉर्ड रखें।", mr: "व्यवसायाच्या औपचारिक नोंदी ठेवा." }
+
+# Fixed wording for the advisory messages (deterministic fallback + guardrail-safe shell for the LLM output).
+advisory_templates:
+  greeting:
+    en: "Hello {name},"
+    hi: "नमस्ते {name} जी,"
+    mr: "नमस्कार {name},"
+  summary:
+    en: "Thank you for applying for a {product} loan with TVS Credit. We could not approve it right now, but here are 3 simple steps that can strengthen your next application."
+    hi: "TVS Credit से {product} लोन के लिए आवेदन करने का धन्यवाद। अभी हम इसे मंज़ूर नहीं कर सके, लेकिन ये 3 आसान कदम आपके अगले आवेदन को मज़बूत कर सकते हैं।"
+    mr: "TVS Credit कडे {product} कर्जासाठी अर्ज केल्याबद्दल धन्यवाद. सध्या आम्ही तो मंजूर करू शकलो नाही, पण हे 3 सोपे उपाय तुमचा पुढील अर्ज मजबूत करू शकतात."
+  closing:
+    en: "Follow these steps for a few months and apply again — we are happy to look at your application again."
+    hi: "कुछ महीने इन कदमों का पालन करें और फिर से आवेदन करें — हम आपके आवेदन को दोबारा देखकर खुश होंगे।"
+    mr: "काही महिने या उपायांचे पालन करा आणि पुन्हा अर्ज करा — तुमचा अर्ज पुन्हा पाहण्यास आम्हाला आनंद होईल."
+  approved:
+    en: "Hello {name}, good news! Your {product} loan has been approved in principle. Our team will contact you shortly to complete the formalities."
+    hi: "नमस्ते {name} जी, खुशखबरी! आपका {product} लोन सैद्धांतिक रूप से मंज़ूर हो गया है। औपचारिकताएं पूरी करने के लिए हमारी टीम जल्द ही आपसे संपर्क करेगी।"
+    mr: "नमस्कार {name}, खुशखबर! तुमचे {product} कर्ज तत्त्वतः मंजूर झाले आहे. औपचारिकता पूर्ण करण्यासाठी आमची टीम लवकरच तुमच्याशी संपर्क साधेल."
+  conditional:
+    en: "Hello {name}, you are close! We can offer your {product} loan with a smaller amount (about ₹{amount}) or if you add a co-applicant. Our team will contact you to discuss."
+    hi: "नमस्ते {name} जी, आप बहुत करीब हैं! हम आपका {product} लोन कम राशि (लगभग ₹{amount}) पर या सह-आवेदक जोड़ने पर दे सकते हैं। चर्चा के लिए हमारी टीम आपसे संपर्क करेगी।"
+    mr: "नमस्कार {name}, तुम्ही अगदी जवळ आहात! आम्ही तुमचे {product} कर्ज कमी रकमेवर (सुमारे ₹{amount}) किंवा सह-अर्जदार जोडल्यास देऊ शकतो. चर्चेसाठी आमची टीम तुमच्याशी संपर्क साधेल."
+  insufficient:
+    en: "Hello {name}, we could not gather enough information to assess your {product} loan automatically. Our team will review your application manually and contact you."
+    hi: "नमस्ते {name} जी, हम आपके {product} लोन का स्वचालित आकलन करने के लिए पर्याप्त जानकारी नहीं जुटा सके। हमारी टीम आपके आवेदन की मैन्युअल समीक्षा करेगी और आपसे संपर्क करेगी।"
+    mr: "नमस्कार {name}, तुमच्या {product} कर्जाचे स्वयंचलित मूल्यांकन करण्यासाठी आम्हाला पुरेशी माहिती मिळाली नाही. आमची टीम तुमच्या अर्जाचे मॅन्युअल पुनरावलोकन करेल आणि तुमच्याशी संपर्क साधेल."
+  consent_request:
+    en: "Hello {name}, TVS Credit needs your permission to look at your bank, mobile and business records to assess your {product} loan. Please review and give consent here: {url}"
+    hi: "नमस्ते {name} जी, आपके {product} लोन के आकलन के लिए TVS Credit को आपके बैंक, मोबाइल और व्यापार रिकॉर्ड देखने की आपकी अनुमति चाहिए। कृपया यहां देखें और सहमति दें: {url}"
+    mr: "नमस्कार {name}, तुमच्या {product} कर्जाच्या मूल्यांकनासाठी TVS Credit ला तुमचे बँक, मोबाइल आणि व्यवसाय नोंदी पाहण्यासाठी तुमची परवानगी हवी आहे. कृपया येथे पाहून संमती द्या: {url}"
+  status_update:
+    en: "Hello {name}, an update on your {product} loan application is ready. View it here: {url}"
+    hi: "नमस्ते {name} जी, आपके {product} लोन आवेदन का अपडेट तैयार है। यहां देखें: {url}"
+    mr: "नमस्कार {name}, तुमच्या {product} कर्ज अर्जाचे अपडेट तयार आहे. येथे पहा: {url}"
+  generic_step:
+    en: "Keep up your regular banking, UPI and mobile recharge habits for the next few months — steady habits build trust."
+    hi: "अगले कुछ महीनों तक अपनी बैंकिंग, UPI और मोबाइल रिचार्ज की नियमित आदतें बनाए रखें — स्थिर आदतें भरोसा बनाती हैं।"
+    mr: "पुढील काही महिने तुमच्या बँकिंग, UPI आणि मोबाइल रिचार्जच्या नियमित सवयी कायम ठेवा — स्थिर सवयी विश्वास निर्माण करतात."
+  plan_link:
+    en: "Full plan: {url}"
+    hi: "पूरी योजना: {url}"
+    mr: "संपूर्ण योजना: {url}"
+  product_labels:
+    TWO_WHEELER: { en: "two-wheeler", hi: "दोपहिया वाहन", mr: "दुचाकी" }
+    USED_CAR: { en: "used car", hi: "पुरानी कार", mr: "जुनी कार" }
+    TRACTOR: { en: "tractor", hi: "ट्रैक्टर", mr: "ट्रॅक्टर" }

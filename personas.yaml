@@ -1,0 +1,162 @@
+# Demo personas. Mobile numbers are fake; the shared generators map each to a deterministic profile.
+# `profile` drives data generation; `bureau` drives the mock bureau; `consent` is the demo's default behaviour.
+personas:
+  - id: 1
+    key: merchant
+    name: "Ramesh Gupta"
+    description: "Small-town merchant — steady UPI/bank inflows, GST filings, regular recharges"
+    mobile_number: "9000000001"
+    pan_token: "PANMERCH01"
+    aadhaar_token: "AADH-MASK-0001"
+    product_sku: TWO_WHEELER
+    language: en
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: merchant, creditworthiness: 0.50 }
+    expected_outcome: APPROVED
+  - id: 2
+    key: gig_rider
+    name: "Sunil Yadav"
+    description: "Gig rider — UPI-heavy, irregular inflows, low buffer, several bounces, no business records"
+    mobile_number: "9000000002"
+    pan_token: "PANGIG0002"
+    aadhaar_token: "AADH-MASK-0002"
+    product_sku: TWO_WHEELER
+    language: hi
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: gig, creditworthiness: 0.30 }
+    expected_outcome: DECLINED_WITH_PLAN
+  - id: 3
+    key: farmer
+    name: "Mohan Patil"
+    description: "Farmer — regular mandi settlements, steady recharges, sparse bank data"
+    mobile_number: "9000000003"
+    pan_token: "PANFARM003"
+    aadhaar_token: "AADH-MASK-0003"
+    product_sku: TRACTOR
+    language: mr
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: farmer, creditworthiness: 0.60 }
+    expected_outcome: APPROVED
+  - id: 4
+    key: struggling_farmer
+    name: "Sanjay Jadhav"
+    description: "Struggling farmer — few receipts, long settlement delays, recharge gaps"
+    mobile_number: "9000000004"
+    pan_token: "PANSTRG004"
+    aadhaar_token: "AADH-MASK-0004"
+    product_sku: TRACTOR
+    language: mr
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: farmer, creditworthiness: 0.10 }
+    expected_outcome: DECLINED_WITH_PLAN
+  - id: 5
+    key: prime_salaried
+    name: "Anita Sharma"
+    description: "Prime salaried — bureau HIT, score 760"
+    mobile_number: "9000000005"
+    pan_token: "PANPRIM005"
+    aadhaar_token: "AADH-MASK-0005"
+    product_sku: USED_CAR
+    language: en
+    bureau: { status: HIT, score: 760 }
+    profile: { segment: salaried, creditworthiness: 0.95 }
+    expected_outcome: BYPASSED_TO_LOS
+  - id: 6
+    key: consent_denier
+    name: "Vikram Singh"
+    description: "Consent denier — NO_HIT, denies consent; no data requested"
+    mobile_number: "9000000006"
+    pan_token: "PANDENY006"
+    aadhaar_token: "AADH-MASK-0006"
+    product_sku: TWO_WHEELER
+    language: hi
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: merchant, creditworthiness: 0.70 }
+    consent_behaviour: deny
+    expected_outcome: CONSENT_DENIED
+  - id: 7
+    key: outage
+    name: "Ramesh Gupta (AA outage)"
+    description: "Persona 1 with the AA source forced to time out — still approved on remaining sources"
+    mobile_number: "9000000001"        # same data as persona 1 on purpose
+    pan_token: "PANMERCH07"
+    aadhaar_token: "AADH-MASK-0007"
+    product_sku: TWO_WHEELER
+    language: en
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: merchant, creditworthiness: 0.50 }
+    simulate_outage: [aa]
+    expected_outcome: APPROVED
+  - id: 8
+    key: salon_owner
+    name: "Ananya Iyer"
+    description: "Salon owner — UPI-first takings, regular clients, no GST registration (below the threshold). Approved on bank and phone data alone"
+    mobile_number: "9000000008"
+    pan_token: "PANSALN008"
+    aadhaar_token: "AADH-MASK-0008"
+    product_sku: TWO_WHEELER
+    language: en
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: merchant, creditworthiness: 0.60, has_gst: false }
+    expected_outcome: APPROVED
+  - id: 9
+    key: auto_driver
+    name: "Dinesh Kumar"
+    description: "Auto-rickshaw driver — cash-heavy, irregular earnings, late recharges. Lands in the borderline band: a smaller ticket is offered"
+    mobile_number: "9000000009"
+    pan_token: "PANAUTO009"
+    aadhaar_token: "AADH-MASK-0009"
+    product_sku: TWO_WHEELER
+    language: hi
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: gig, creditworthiness: 0.28 }
+    expected_outcome: CONDITIONAL_APPROVAL
+  - id: 10
+    key: dairy_farmer
+    name: "Lakshmi Bai"
+    description: "Dairy farmer — paid through mandi-style settlements, no bank account in her own name. Scored on telecom and business records only"
+    mobile_number: "9000000010"
+    pan_token: "PANDAIR010"
+    aadhaar_token: "AADH-MASK-0010"
+    product_sku: TWO_WHEELER
+    language: mr
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: farmer, creditworthiness: 0.20, has_aa: false }
+    expected_outcome: CONDITIONAL_APPROVAL
+  - id: 11
+    key: tractor_no_data
+    name: "Kiran Reddy"
+    description: "Tractor applicant whose bank and telecom feeds both time out. Only one source is left, so the system refuses to score and refers to manual review"
+    mobile_number: "9000000011"
+    pan_token: "PANTRAC011"
+    aadhaar_token: "AADH-MASK-0011"
+    product_sku: TRACTOR
+    language: en
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: farmer, creditworthiness: 0.70 }
+    simulate_outage: [aa, telecom]
+    expected_outcome: INSUFFICIENT_DATA
+  - id: 12
+    key: first_time_salaried
+    name: "Priya Menon"
+    description: "First-time borrower, salaried IT employee with a steady monthly credit and no bureau history. Approved on the bank statement alone"
+    mobile_number: "9000000012"
+    pan_token: "PANSALA012"
+    aadhaar_token: "AADH-MASK-0012"
+    product_sku: TWO_WHEELER
+    language: en
+    bureau: { status: NO_HIT, score: -1 }
+    profile: { segment: salaried, creditworthiness: 0.45 }
+    expected_outcome: APPROVED
+  - id: 13
+    key: bureau_weak
+    name: "Suresh Pawar"
+    description: "Has a bureau record (score 590) below the bypass threshold. Routed unchanged to the standard LOS — Saksham is not used"
+    mobile_number: "9000000013"
+    pan_token: "PANBURE013"
+    aadhaar_token: "AADH-MASK-0013"
+    product_sku: USED_CAR
+    language: mr
+    bureau: { status: HIT, score: 590 }
+    profile: { segment: merchant, creditworthiness: 0.40 }
+    expected_outcome: BYPASSED_TO_LOS

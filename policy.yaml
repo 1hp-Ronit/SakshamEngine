@@ -1,0 +1,125 @@
+# Saksham Engine — policy & business configuration.
+
+
+policy_version: "v1.0"
+
+bureau:
+  bypass_threshold: 700          # bureau score >= this → straight to LOS
+  # NO_HIT (score -1) → Saksham. HIT with score < bypass_threshold → LOS unchanged (out of scope).
+
+decision:
+  approve_cutoff: 650            # score >= cutoff → APPROVED
+  borderline_enabled: true
+  borderline_floor: 600          # floor <= score < cutoff → CONDITIONAL_APPROVAL
+  borderline_ticket_factor: 0.7  # suggested smaller ticket as a fraction of the requested ticket
+  min_sources_for_scoring: 2     # fewer usable source groups → INSUFFICIENT_DATA
+  max_pd_for_approval: null      # optional hard PD ceiling (null = disabled)
+  comfortable_emi_ratio: 0.33    # EMI up to this share of estimated income is shown as comfortable in the dealer console
+
+scorecard:
+  pdo: 60                        # points to double the odds
+  target_score: 650              # anchor: this score ↔ target_pd
+  target_pd: 0.07
+  offset: null                   # null → derived from target_score/target_pd; set a number to override
+  min_score: 300
+  max_score: 900
+
+ingestion:
+  per_source_timeout_seconds: 3.0
+  outage_sleep_seconds: 5.0      # how long a mock source sleeps when ?simulate_outage=true
+
+session:
+  ttl_minutes: 15                # consent-session lifetime (lazily enforced on read)
+
+consent:
+  ttl_days: 182                  # ~6 months
+  purpose_template: "Alternative credit assessment for {product} loan"
+  groups: [aa, telecom, business]
+
+# Flat-rate EMI = principal * (1 + flat_rate * tenure_years) / tenure_months, unless `emi` is pinned.
+products:
+  TWO_WHEELER:
+    label: "Two-Wheeler"
+    ticket: 80000
+    tenure_months: 24
+    emi: 4200
+    flat_rate: 0.14
+  USED_CAR:
+    label: "Used Car"
+    ticket: 300000
+    tenure_months: 48
+    emi: 8500
+    flat_rate: 0.14
+  TRACTOR:
+    label: "Tractor"
+    ticket: 500000
+    tenure_months: 60
+    emi: 12000
+    flat_rate: 0.14
+
+languages:
+  supported: [en, hi, mr]
+  default: en
+
+ladder:
+  initial_score: 50
+  max_score: 100
+  min_score: 0
+  deltas:
+    ON_TIME: 5
+    LATE: -8
+    MISSED: -15
+  tier_order: [STARTER, GROWTH, ESTABLISHED]
+  tiers:
+    STARTER:
+      min_behaviour_score: 0
+      limits: { TWO_WHEELER: 80000, USED_CAR: 0, TRACTOR: 0 }
+    GROWTH:
+      min_behaviour_score: 70
+      limits: { TWO_WHEELER: 120000, USED_CAR: 200000, TRACTOR: 0 }
+    ESTABLISHED:
+      min_behaviour_score: 85
+      limits: { TWO_WHEELER: 180000, USED_CAR: 350000, TRACTOR: 500000 }
+
+messaging:
+  whatsapp_window_hours: 24
+  consent_prefill_text: "Hi Saksham, I have given my consent."
+
+advisory:
+  max_steps: 3
+  # Phrases that must never appear in generated advice (post-validation guardrails)
+  forbidden_phrases: ["guaranteed", "guarantee", "will be approved", "definitely approved", "your score is", "आपका स्कोर", "तुमचा स्कोर"]
+  cache_size: 256
+
+ml:
+  n_applicants: 20000
+  seed: 42
+  target_default_rate: 0.10
+  split: { train: 0.70, val: 0.15, test: 0.15 }
+  drop_source_prob: 0.06         # simulate outage / no-consent in training rows so the model learns NaN handling
+  product_mix:                   # which product each synthetic segment applies for
+    merchant: { TWO_WHEELER: 0.5, USED_CAR: 0.5 }
+    gig: { TWO_WHEELER: 0.9, USED_CAR: 0.1 }
+    farmer: { TRACTOR: 0.6, TWO_WHEELER: 0.4 }
+    salaried: { TWO_WHEELER: 0.5, USED_CAR: 0.5 }
+  label:                         # synthetic default process: logistic(latent creditworthiness + burden + interaction + noise)
+    cw_slope: 7.0
+    burden_slope: 3.0
+    interaction: 2.0
+    noise_sd: 0.35
+
+mock:
+  # Anchor date for mock payloads. Fixed → fully deterministic demo. Empty string → today's date.
+  as_of_date: "2026-10-01"
+
+# Constants used by the feature pipeline. Changing them changes model inputs → re-run `make train`.
+features:
+  low_balance_threshold: 500
+  bounce_window_days: 90
+  gst_margin: 0.18               # est. income = GST turnover * margin
+  mandi_margin: 0.45             # est. income = mandi settlements * margin
+  income_blend_weights: { aa: 0.5, gst: 0.3, mandi: 0.3 }
+
+# Reasons a dealer can record when withdrawing an approval (shown in the dashboard; stored with the withdrawal).
+withdrawal:
+  reasons: [FRAUD_SUSPECTED, APPLICANT_REQUEST, DUPLICATE_APPLICATION, DOCUMENTS_NOT_VERIFIED, OTHER]

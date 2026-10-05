@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  /* Light theme: soft tints on an off-white page. Accent is teal/mint to match the hero video
+     (deep teal/cyan) and the TVS Credit blue-green, not the earlier violet. `lav-*` are the
+     historical token names, now teal tints. Video hero/tile text stays white regardless of
+     theme — that's legibility over the video image, not a page colour. */
+  --color-paper: #f5faf8;
+  --color-surface: #ffffff;
+  --color-surface-2: #e8f5f1;
+  --color-ink: #10231f;
+  --color-ink-soft: #5d7a73;
+  --color-accent: #0d9488;
+  --color-accent-ink: #ffffff;
+  --color-lav-50: #eafaf6;
+  --color-lav-100: #d2f1e9;
+  --color-lav-200: #a3e2d1;
+  --color-lav-300: #5fd0bd;
+  --color-lav-500: #11998e;
+  --color-lav-700: #0b6b61;
+  --color-ok: #15803d;
+  --color-ok-soft: rgba(21, 128, 61, 0.12);
+  --color-warn: #b45309;
+  --color-warn-soft: rgba(180, 83, 9, 0.12);
+}
+
+html, body, #root { min-height: 100%; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  background: radial-gradient(1100px 520px at 50% -8%, rgba(13, 148, 136, 0.12), transparent 62%), var(--color-paper);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--color-lav-200); color: #fff; }
+
+
+
+
+.btn-dark { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 9999px; background: var(--color-accent); color: var(--color-accent-ink); padding: .65rem 1.4rem; font-size: .875rem; font-weight: 600; transition: transform .15s, opacity .15s, background .15s, box-shadow .15s; box-shadow: 0 8px 24px -10px rgba(13, 148, 136, .45); }
+.btn-dark:hover { background: #0b7f74; }
+.btn-dark:active { transform: scale(.98); }
+.btn-dark:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+.btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 9999px; border: 1px solid rgba(25,21,43,.14); padding: .55rem 1.1rem; font-size: .8125rem; font-weight: 500; color: var(--color-ink); background: rgba(25,21,43,.03); transition: background .15s, border-color .15s; }
+.btn-ghost:hover { background: rgba(25,21,43,.07); border-color: rgba(25,21,43,.22); }
+.btn-ghost:disabled { opacity: .4; cursor: not-allowed; }
+
+.field { width: 100%; border-radius: 1rem; border: 1px solid rgba(25,21,43,.12); background: #ffffff; color: var(--color-ink); padding: .7rem .9rem; font-size: .9rem; outline: none; transition: border-color .15s, box-shadow .15s; }
+.field:focus { border-color: var(--color-accent); box-shadow: 0 0 0 4px rgba(13,148,136,.16); }
+.field:disabled { opacity: .55; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+
+/* Accordion body: animates height without measuring it */
+.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
+.acc[data-open="true"] { grid-template-rows: 1fr; }
+.acc > div { overflow: hidden; }
